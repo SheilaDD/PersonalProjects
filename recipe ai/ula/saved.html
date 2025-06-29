@@ -1,0 +1,59 @@
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <link rel="stylesheet" href="style.css" />
+    <script defer src="app.js"></script>
+  </head>
+  <body>
+    <header class="header">
+      <h2>Saved Recipes</h2>
+    </header>
+    <div class="toggle-view">
+      <button>Grid</button>
+      <button>List</button>
+    </div>
+    <nav class="category-tabs">
+      <button>All</button>
+      <button>Recent</button>
+      <button>Most Made</button>
+    </nav>
+    <section class="saved-recipes-grid"></section>
+    <!-- Saved recipes go here -->
+    <script>
+      window.addEventListener("DOMContentLoaded", function () {
+        const grid = document.querySelector(".saved-recipes-grid");
+        const saved = JSON.parse(localStorage.getItem("savedRecipes") || "[]");
+        grid.innerHTML = "";
+        if (saved.length === 0) {
+          grid.innerHTML = "<p>No saved recipes yet.</p>";
+        } else {
+          saved.forEach((recipe) => {
+            const card = document.createElement("div");
+            card.className = "recipe-card";
+            card.innerHTML = `
+                <h3>${recipe.title}</h3>
+                <img src="${recipe.image}" style="max-width:100px;border-radius:8px;" />
+              `;
+            grid.appendChild(card);
+          });
+        }
+      });
+    </script>
+    <nav class="bottom-nav">
+      <a href="index.html">
+        <button><i class="fas fa-home"></i>Home</button>
+      </a>
+      <a href="saved.html">
+        <button><i class="fas fa-bookmark"></i>Saved</button>
+      </a>
+      <a href="shop.html">
+        <button><i class="fas fa-shopping-cart"></i>Shop</button>
+      </a>
+      <a href="profile.html">
+        <button><i class="fas fa-user"></i>Profile</button>
+      </a>
+    </nav>
+  </body>
+</html>

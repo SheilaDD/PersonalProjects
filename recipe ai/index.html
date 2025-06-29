@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>u.la Recipe App</title>
+    <style>
+      body {
+        margin: 0;
+        font-family: Arial, sans-serif;
+        background: #fff;
+        color: #333;
+        display: flex;
+        flex-direction: column;
+        height: 100vh;
+      }
+
+      header {
+        background: #ff9eaf; /* pink */
+        color: white;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 1rem 1.5rem;
+        font-weight: bold;
+        font-size: 1.5rem;
+        position: sticky;
+        top: 0;
+        z-index: 10;
+      }
+
+      header .logo {
+        font-family: "Arial Black", sans-serif;
+      }
+
+      header .profile-icon {
+        font-size: 1.8rem;
+        cursor: pointer;
+      }
+
+      main {
+        flex: 1;
+        padding: 1rem 1.5rem;
+        overflow-y: auto;
+      }
+
+      .search-bar {
+        width: 100%;
+        padding: 0.75rem 1rem;
+        border: 2px solid #ff9eaf;
+        border-radius: 9999px;
+        font-size: 1rem;
+        margin-bottom: 1rem;
+      }
+
+      /* Example bottom nav styling */
+      nav.bottom-nav {
+        background: white;
+        border-top: 1px solid #eee;
+        display: flex;
+        justify-content: space-around;
+        padding: 0.5rem 0;
+        position: fixed;
+        bottom: 0;
+        width: 100%;
+        box-shadow: 0 -1px 5px rgba(0, 0, 0, 0.1);
+        z-index: 10;
+      }
+
+      nav.bottom-nav button {
+        background: none;
+        border: none;
+        outline: none;
+        color: #ff9eaf;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        font-size: 0.8rem;
+        cursor: pointer;
+      }
+
+      nav.bottom-nav button i {
+        font-size: 1.5rem;
+        margin-bottom: 0.2rem;
+      }
+
+      /* Pink text utility */
+      .pink-text {
+        color: #ff9eaf;
+      }
+
+      /* Sample ingredient tags */
+      .ingredient-tag {
+        background: #ffe6ea;
+        color: #ff9eaf;
+        padding: 0.3rem 0.7rem;
+        border-radius: 9999px;
+        margin-right: 0.5rem;
+        display: inline-flex;
+        align-items: center;
+        font-size: 0.9rem;
+      }
+
+      .ingredient-tag button {
+        background: none;
+        border: none;
+        color: #ff9eaf;
+        margin-left: 0.3rem;
+        cursor: pointer;
+      }
+
+      /* Recipe card grid */
+      .recipe-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 1rem;
+      }
+
+      .recipe-card {
+        border: 1px solid #eee;
+        border-radius: 8px;
+        overflow: hidden;
+        box-shadow: 0 0 4px rgba(0, 0, 0, 0.05);
+        cursor: pointer;
+      }
+
+      .recipe-card img {
+        width: 100%;
+        height: 120px;
+        object-fit: cover;
+      }
+
+      .recipe-info {
+        padding: 0.5rem 0.75rem;
+      }
+
+      .recipe-name {
+        font-weight: bold;
+        font-size: 1rem;
+        margin: 0 0 0.25rem 0;
+      }
+
+      .recipe-meta {
+        font-size: 0.8rem;
+        color: #777;
+        display: flex;
+        justify-content: space-between;
+      }
+    </style>
+    <!-- Load Font Awesome CDN for icons -->
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+  </head>
+  <body>
+    <header>
+      <div class="logo">u.la</div>
+      <div class="profile-icon"><i class="fas fa-user-circle"></i></div>
+    </header>
+
+    <main>
+      <p>Enter your ingredients</p>
+      <input
+        class="search-bar"
+        placeholder="Search recipes from your ingredients"
+      />
+
+      <section>
+        <h3 class="pink-text">Ingredients</h3>
+        <div
+          id="ingredients-list"
+          style="display: flex; overflow-x: auto; padding-bottom: 0.5rem"
+        >
+          <!-- Example tags -->
+          <div class="ingredient-tag">
+            Tomato
+            <button onclick="removeIngredient('Tomato')">
+              <i class="fas fa-times"></i>
+            </button>
+          </div>
+          <div class="ingredient-tag">
+            Cheese
+            <button onclick="removeIngredient('Cheese')">
+              <i class="fas fa-times"></i>
+            </button>
+          </div>
+        </div>
+        <button
+          onclick="addIngredientPrompt()"
+          style="
+            margin-top: 0.5rem;
+            color: #ff9eaf;
+            border: none;
+            background: none;
+            cursor: pointer;
+            font-weight: bold;
+          "
+        >
+          + Add Ingredient
+        </button>
+      </section>
+
+      <section style="margin-top: 2rem">
+        <h3 class="pink-text">Recipe Recommendations</h3>
+        <div class="recipe-grid" id="recipe-grid">
+          <!-- Recipe cards injected here -->
+        </div>
+      </section>
+    </main>
+
+    <nav class="bottom-nav">
+      <button onclick="setTab('home')"><i class="fas fa-home"></i>Home</button>
+      <button onclick="setTab('saved')">
+        <i class="fas fa-bookmark"></i>Saved
+      </button>
+      <button onclick="setTab('shopping')">
+        <i class="fas fa-shopping-cart"></i>Shop
+      </button>
+      <button onclick="setTab('profile')">
+        <i class="fas fa-user"></i>Profile
+      </button>
+    </nav>
+
+    <script>
+      const ingredientsList = document.getElementById("ingredients-list");
+      const recipeGrid = document.getElementById("recipe-grid");
+      let ingredients = ["Tomato", "Cheese"];
+
+      function renderIngredients() {
+        ingredientsList.innerHTML = "";
+        ingredients.forEach((ing) => {
+          const tag = document.createElement("div");
+          tag.className = "ingredient-tag";
+          tag.innerHTML = `${ing} <button onclick="removeIngredient('${ing}')"><i class="fas fa-times"></i></button>`;
+          ingredientsList.appendChild(tag);
+        });
+      }
+
+      function addIngredientPrompt() {
+        const ing = prompt("Enter an ingredient");
+        if (ing && !ingredients.includes(ing)) {
+          ingredients.push(ing);
+          renderIngredients();
+          fetchRecipes();
+        }
+      }
+
+      function removeIngredient(name) {
+        ingredients = ingredients.filter((i) => i !== name);
+        renderIngredients();
+        fetchRecipes();
+      }
+
+      async function fetchRecipes() {
+        // For demo: static sample data, replace with real API call
+        const sampleRecipes = [
+          {
+            id: 1,
+            name: "Creamy Garlic Pasta",
+            image: "https://source.unsplash.com/featured/?pasta",
+            matchPercentage: 95,
+            time: "25 min",
+            difficulty: "Easy",
+          },
+          {
+            id: 2,
+            name: "Vegetable Stir Fry",
+            image: "https://source.unsplash.com/featured/?vegetables",
+            matchPercentage: 88,
+            time: "20 min",
+            difficulty: "Medium",
+          },
+        ];
+        renderRecipes(sampleRecipes);
+      }
+
+      function renderRecipes(recipes) {
+        recipeGrid.innerHTML = "";
+        recipes.forEach((recipe) => {
+          const card = document.createElement("div");
+          card.className = "recipe-card";
+          card.innerHTML = `
+        <img src="${recipe.image}" alt="${recipe.name}" />
+        <div class="recipe-info">
+          <div class="recipe-name">${recipe.name}</div>
+          <div class="recipe-meta">
+            <span>${recipe.matchPercentage}% match</span>
+            <span>${recipe.time}</span>
+            <span>${recipe.difficulty}</span>
+          </div>
+        </div>
+      `;
+          recipeGrid.appendChild(card);
+        });
+      }
+
+      function setTab(tab) {
+        alert(
+          "Switching to " +
+            tab +
+            " page (functionality not implemented in this demo)"
+        );
+      }
+
+      // Initial render
+      renderIngredients();
+      fetchRecipes();
+    </script>
+  </body>
+</html>

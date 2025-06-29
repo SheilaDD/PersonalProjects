@@ -1,0 +1,150 @@
+body {
+  font-family: sans-serif;
+  margin: 0;
+  padding: 0;
+  background: #f9f9f9;
+}
+.header {
+  display: flex;
+  justify-content: space-between;
+  padding: 1rem;
+  background: #ff69b4;
+  color: white;
+}
+.search-section input {
+  width: 100%;
+  padding: 10px;
+  margin: 10px 0;
+}
+.title {
+  font-size: 1.5rem;
+  font-weight: bold;
+  margin-left: 0%;
+  padding-left: 0%;
+  color: #f0e9eb; /* Hot pink */
+}
+.header img {
+  height: 50px;
+  width: auto;
+  margin-right: 20px;
+  text-align: center;
+}
+.ingredients-section,
+/* Recipe grid styles */
+#recipe-grid, .recipes-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 16px;
+  padding: 16px;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+/* Recipe card styles */
+.recipe-card {
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  padding: 16px;
+  text-align: center;
+  width: 100%;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.recipe-card img {
+  max-width: 100%;
+  height: auto;
+  border-radius: 8px;
+  margin-bottom: 8px;
+}
+
+/* Responsive adjustments */
+@media (max-width: 600px) {
+  #recipe-grid,
+  .recipes-grid {
+    grid-template-columns: 1fr;
+    padding: 3px;
+    gap: 3px;
+  }
+  .recipe-card {
+    padding: 10px;
+  }
+}
+.bottom-nav {
+  background: #ff69b4; /* Hot pink */
+  padding: 10px 0;
+  display: flex;
+  justify-content: space-around;
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  z-index: 100;
+}
+
+.bottom-nav button {
+  background: #fff0f6;
+  color: #d72660;
+  border: none;
+  border-radius: 20px;
+  padding: 8px 16px;
+  font-size: 1rem;
+  transition: background 0.2s;
+}
+
+.bottom-nav button:hover {
+  background: #ffd1ea;
+}
+/* Modal overlay styles */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.7);
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Modal content styles */
+.modal-content {
+  background: #fff;
+  border-radius: 12px;
+  padding: 24px;
+  max-width: 90vw;
+  max-height: 90vh;
+  overflow-y: auto;
+  position: relative;
+  box-sizing: border-box;
+}
+
+.close-btn {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  font-size: 2rem;
+  color: #d72660;
+  cursor: pointer;
+  font-weight: bold;
+  z-index: 10001;
+}
+.save-btn {
+  background: #ff69b4;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  padding: 10px 20px;
+  margin-top: 16px;
+  font-size: 1rem;
+  cursor: pointer;
+}
+.save-btn:disabled {
+  background: #ccc;
+  cursor: not-allowed;
+}
