@@ -1,0 +1,33 @@
+body {
+  font-family: Arial, sans-serif;
+  padding: 20px;
+  background: #f9f9f9;
+}
+
+h1 {
+  text-align: center;
+  margin-bottom: 30px;
+}
+
+#roadmap-container {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  max-width: 600px;
+  margin: auto;
+}
+
+.roadmap-step {
+  background: white;
+  padding: 15px;
+  border-left: 5px solid #2196f3;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  cursor: pointer;
+  transition: 0.3s ease;
+}
+
+.roadmap-step.completed {
+  border-left-color: #4caf50;
+  background-color: #e8f5e9;
+  text-decoration: line-through;
+}
