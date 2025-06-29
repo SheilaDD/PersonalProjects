@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Soccer Blog & Live Scores</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        margin: 0;
+        background: #f9f9f9;
+      }
+      header,
+      footer {
+        background: #00796b;
+        color: white;
+        text-align: center;
+        padding: 1rem;
+      }
+      nav {
+        display: flex;
+        justify-content: center;
+        background: #004d40;
+        flex-wrap: wrap;
+        gap: 1rem;
+        padding: 1rem;
+      }
+      nav a {
+        color: white;
+        cursor: pointer;
+        font-weight: bold;
+        text-decoration: none;
+      }
+      .search-bar {
+        display: flex;
+        justify-content: center;
+        padding: 1rem;
+        background: #e0e0e0;
+      }
+      .search-bar input {
+        width: 60%;
+        padding: 0.5rem;
+        font-size: 1rem;
+      }
+      .search-bar button {
+        padding: 0.5rem 1rem;
+        background: #00796b;
+        color: white;
+        border: none;
+        margin-left: 0.5rem;
+        cursor: pointer;
+      }
+      .container {
+        max-width: 900px;
+        margin: auto;
+        padding: 1rem;
+      }
+      section {
+        display: none;
+      }
+      .visible {
+        display: block;
+      }
+      .card {
+        background: white;
+        padding: 1rem;
+        margin-bottom: 1rem;
+        border-radius: 8px;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+      }
+      .comment-box textarea {
+        width: 100%;
+        padding: 0.5rem;
+        resize: vertical;
+      }
+      .comment-box button {
+        margin-top: 0.5rem;
+        padding: 0.5rem 1rem;
+        background: #00796b;
+        color: white;
+        border: none;
+      }
+      .comment-actions button {
+        margin-right: 0.5rem;
+        padding: 0.25rem 0.5rem;
+      }
+    </style>
+  </head>
+  <body>
+    <header><h1>Soccer Blog & Live Scores</h1></header>
+    <nav>
+      <a onclick="showSection('home')">Home</a>
+      <a onclick="showSection('live')">Live Scores</a>
+      <a onclick="showSection('scheduled')">Scheduled Matches</a>
+      <a onclick="showSection('blog')">Blog</a>
+    </nav>
+    <div class="search-bar">
+      <input
+        type="text"
+        id="searchInput"
+        placeholder="Search teams or comments..."
+      />
+      <button onclick="doSearch()">Search</button>
+    </div>
+
+    <div class="container">
+      <section id="home">
+        <h2>Latest Soccer News</h2>
+        <div id="newsContainer" class="card">Loading news...</div>
+      </section>
+
+      <section id="live">
+        <h2>Live Scores</h2>
+        <div id="liveContainer" class="card">Loading live scores...</div>
+      </section>
+
+      <section id="scheduled">
+        <h2>Scheduled Matches</h2>
+        <div id="scheduledContainer" class="card">Loading fixtures...</div>
+      </section>
+
+      <section id="blog">
+        <h2>Soccer Blog Comments</h2>
+        <div class="comment-box">
+          <textarea
+            id="commentInput"
+            rows="4"
+            placeholder="Write your comment..."
+          ></textarea>
+          <button onclick="addComment()">Post Comment</button>
+        </div>
+        <div id="commentsContainer" class="card"><p>No comments yet.</p></div>
+      </section>
+    </div>
+
+    <footer><p>&copy; 2025 Soccer Blog</p></footer>
+
+    <script>
+      const API_KEY = "YOUR_API_FOOTBALL_KEY";
+      const MEDIASTACK_KEY = "YOUR_MEDIASTACK_KEY";
+      const LEAGUE_ID = 253;
+      const SEASON = 2024;
+      let comments = [];
+      let current = "home";
+
+      function showSection(id) {
+        current = id;
+        document
+          .querySelectorAll("section")
+          .forEach((sec) => sec.classList.remove("visible"));
+        document.getElementById(id).classList.add("visible");
+
+        if (id === "home") loadLatestNews();
+        if (id === "live") loadLiveScores();
+        if (id === "scheduled") loadScheduledMatches();
+        if (id === "blog") renderComments();
+      }
+
+      async function loadLatestNews() {
+        const container = document.getElementById("newsContainer");
+        container.innerHTML = "Loading...";
+        try {
+          const res = await fetch(
+            `http://api.mediastack.com/v1/news?access_key=${MEDIASTACK_KEY}&countries=za&categories=sports&limit=5`
+          );
+          const data = await res.json();
+          container.innerHTML = data.data
+            .map(
+              (n) => `
+          <div class="card">
+            <strong>${n.title}</strong><br/>
+            <a href="${n.url}" target="_blank">Read more</a>
+          </div>
+        `
+            )
+            .join("");
+        } catch (e) {
+          container.innerHTML = "<p>Error loading news.</p>";
+        }
+      }
+
+      async function loadLiveScores() {
+        const container = document.getElementById("liveContainer");
+        container.innerHTML = "Loading...";
+        try {
+          const res = await fetch(
+            `https://v3.football.api-sports.io/fixtures?live=all`,
+            {
+              headers: { "x-apisports-key": API_KEY },
+            }
+          );
+          const data = await res.json();
+          const matches = data.response.filter(
+            (m) => m.league.id === LEAGUE_ID
+          );
+          container.innerHTML = matches.length
+            ? matches
+                .map(
+                  (m) => `
+          <div>
+            <strong>${m.teams.home.name}</strong> ${m.goals.home} - ${m.goals.away} <strong>${m.teams.away.name}</strong><br/>
+            <small>${m.fixture.status.long}</small>
+          </div>
+        `
+                )
+                .join("")
+            : "<p>No live matches right now.</p>";
+        } catch (e) {
+          container.innerHTML = "<p>Error loading scores.</p>";
+        }
+      }
+
+      async function loadScheduledMatches() {
+        const container = document.getElementById("scheduledContainer");
+        container.innerHTML = "Loading...";
+        try {
+          const from = new Date().toISOString().split("T")[0];
+          const to = new Date(Date.now() + 7 * 86400000)
+            .toISOString()
+            .split("T")[0];
+          const res = await fetch(
+            `https://v3.football.api-sports.io/fixtures?league=${LEAGUE_ID}&season=${SEASON}&from=${from}&to=${to}`,
+            {
+              headers: { "x-apisports-key": API_KEY },
+            }
+          );
+          const data = await res.json();
+          container.innerHTML =
+            data.response
+              .map(
+                (m) => `
+          <div>
+            <strong>${m.teams.home.name}</strong> vs <strong>${
+                  m.teams.away.name
+                }</strong><br/>
+            <small>${new Date(m.fixture.date).toLocaleString()}</small>
+          </div>
+        `
+              )
+              .join("") || "<p>No scheduled matches.</p>";
+        } catch (e) {
+          container.innerHTML = "<p>Error loading fixtures.</p>";
+        }
+      }
+
+      function addComment() {
+        const text = document.getElementById("commentInput").value.trim();
+        if (!text) return;
+        comments.unshift({ text, likes: 0 });
+        document.getElementById("commentInput").value = "";
+        renderComments();
+      }
+
+      function renderComments() {
+        const container = document.getElementById("commentsContainer");
+        if (comments.length === 0) {
+          container.innerHTML = "<p>No comments yet.</p>";
+          return;
+        }
+        container.innerHTML = comments
+          .map(
+            (c, i) => `
+        <div class="card">
+          <p>${c.text}</p>
+          <div class="comment-actions">
+            <button onclick="likeComment(${i})">👍 ${c.likes}</button>
+            <button onclick="shareComment(${i})">Share</button>
+          </div>
+        </div>
+      `
+          )
+          .join("");
+      }
+
+      function likeComment(i) {
+        comments[i].likes++;
+        renderComments();
+      }
+
+      function shareComment(i) {
+        const text = encodeURIComponent(comments[i].text);
+        const url = `https://twitter.com/intent/tweet?text=${text}`;
+        window.open(url, "_blank");
+      }
+
+      function doSearch() {
+        const term = document.getElementById("searchInput").value.toLowerCase();
+        if (current === "blog") {
+          const cards = document.querySelectorAll("#commentsContainer .card");
+          cards.forEach((card) => {
+            card.style.display = card.textContent.toLowerCase().includes(term)
+              ? "block"
+              : "none";
+          });
+        }
+      }
+
+      document.addEventListener("DOMContentLoaded", () => showSection("home"));
+    </script>
+  </body>
+</html>
