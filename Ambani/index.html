@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Ambani – English to Venda</title>
+    <style>
+      body {
+        font-family: "Segoe UI", sans-serif;
+        background: #f9f9f9;
+        margin: 0;
+        padding: 0;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+      }
+
+      .app-container {
+        background: #fff;
+        padding: 20px;
+        border-radius: 15px;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        width: 90%;
+        max-width: 400px;
+        text-align: center;
+      }
+
+      h1 {
+        color: #4caf50;
+        font-size: 28px;
+      }
+
+      input {
+        width: 100%;
+        padding: 12px;
+        margin-top: 10px;
+        font-size: 16px;
+        border-radius: 10px;
+        border: 1px solid #ccc;
+      }
+
+      button {
+        margin-top: 15px;
+        background-color: #4caf50;
+        color: white;
+        padding: 12px 20px;
+        border: none;
+        border-radius: 10px;
+        cursor: pointer;
+        font-size: 16px;
+      }
+
+      button:hover {
+        background-color: #45a049;
+      }
+
+      .result {
+        margin-top: 20px;
+        font-size: 20px;
+        color: #333;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="app-container">
+      <h1>Ambani</h1>
+      <p>English to Venda Translator</p>
+      <input
+        type="text"
+        id="englishInput"
+        placeholder="Enter English word..."
+      />
+      <button onclick="translateWord()">Translate</button>
+      <div class="result" id="resultArea"></div>
+    </div>
+
+    <script>
+      const dictionary = {
+        hello: "ndo",
+        "thank you": "ndo livhuwa",
+        goodbye: "nndaa",
+        yes: "ee",
+        no: "hai",
+        please: "ndapfa",
+        water: "madi",
+        food: "zwoḽiwa",
+        school: "tshikolo",
+        love: "lufuno",
+      };
+
+      function translateWord() {
+        const input = document
+          .getElementById("englishInput")
+          .value.trim()
+          .toLowerCase();
+        const resultArea = document.getElementById("resultArea");
+
+        if (input in dictionary) {
+          resultArea.textContent = `"${input}" in Venda is: "${dictionary[input]}"`;
+        } else {
+          resultArea.textContent = `Sorry, "${input}" is not in the dictionary yet.`;
+        }
+      }
+    </script>
+  </body>
+</html>
